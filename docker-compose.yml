@@ -1,0 +1,34 @@
+mysql:
+    build: images/mysql
+    ports:
+        - "3307:3306"
+    tty: true
+    hostname: mysql
+    environment:
+        MYSQL_ROOT_PASSWORD: root
+    volumes:
+        - "./tmp/mysql:/var/lib/mysql"
+source:
+    build: images/source
+    tty: true
+    hostname: source
+    volumes:
+        - "./src:/var/www/html"
+app:
+    build: images/app
+    tty: true
+    hostname: app
+    links:
+        - mysql
+    volumes_from:
+        - source
+proxy:
+    build: images/proxy
+    ports:
+        - "8080:80"
+    expose:
+        - "80"
+    tty: true
+    hostname: proxy
+    links:
+        - app
